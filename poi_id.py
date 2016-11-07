@@ -93,34 +93,25 @@ for k in set(to_delete):
 ### needlessly reduce the dataset.
 
 
-### scaling features so that SVM will work properly
-min_max_scaler = MinMaxScaler()
-scaled_features = min_max_scaler.fit_transform(select_features)
-
-
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
 ### Note that if you want to do PCA or other multi-stage operations,
 ### you'll need to use Pipelines. For more info:
 ### http://scikit-learn.org/stable/modules/pipeline.html
 
-# Provided to give you a starting point. Try a variety of classifiers.
-from sklearn.cross_validation import train_test_split, cross_val_score
-features_train, features_test, labels_train, labels_test = \
-    train_test_split(scaled_features, labels, test_size=0.3, random_state=42)
     
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import precision_score, recall_score
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 
 clf_nb = GaussianNB()
-clf_svc = SVC(C=10000) #setting C very high to see if some POIs can be classified
 clf_dtree = DecisionTreeClassifier()
 clf_forest = RandomForestClassifier()
+clf_ada = AdaBoostClassifier()
 
-for clf in [clf_nb, clf_svc, clf_dtree, clf_forest]:
+for clf in [clf_nb, clf_dtree, clf_forest, clf_ada]:
     test_classifier(clf, my_dataset, features_list)
 
     
@@ -139,7 +130,7 @@ param_grid = {'criterion':['gini','entropy'], 'splitter':['best','random'], 'max
 dtree = DecisionTreeClassifier()
 clf = GridSearchCV(dtree, param_grid, 'f1')
 clf.fit(select_features, labels)
-print clf.best_params
+print clf.best_params_
 
 ### GridSearchCV seemed to return a different set of 'ideal' parameters each time
 ### these are the parameters that seem fairly stable each time GridSearchCV is run, max_depth appears to change each time
