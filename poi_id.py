@@ -109,7 +109,9 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 clf_nb = GaussianNB()
 clf_dtree = DecisionTreeClassifier()
 clf_forest = RandomForestClassifier()
-clf_ada = AdaBoostClassifier()
+clf_ada = AdaBoostClassifier(learning_rate=3)
+
+
 
 for clf in [clf_nb, clf_dtree, clf_forest, clf_ada]:
     test_classifier(clf, my_dataset, features_list)
@@ -125,10 +127,14 @@ for clf in [clf_nb, clf_dtree, clf_forest, clf_ada]:
 from sklearn.grid_search import GridSearchCV
 
 #tuning the parameters on decision tree
-param_grid = {'criterion':['gini','entropy'], 'splitter':['best','random'], 'max_depth':[5,10,15,20,50],'min_samples_split':[2,3,4,5,6,7]}
+#param_grid = {'criterion':['gini','entropy'], 'splitter':['best','random'], 'max_depth':[5,10,15,20,50],'min_samples_split':[2,3,4,5,6,7]}
 
-dtree = DecisionTreeClassifier()
-clf = GridSearchCV(dtree, param_grid, 'f1')
+
+#tuning the parameters on ada boost
+param_grid = {'n_estimators':[5,25,50,75,100], 'learning_rate':[1,2,3,4]}
+
+ada = AdaBoostClassifier()
+clf = GridSearchCV(ada, param_grid, 'f1')
 clf.fit(select_features, labels)
 print clf.best_params_
 

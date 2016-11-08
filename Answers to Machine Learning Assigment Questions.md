@@ -22,8 +22,23 @@ The features that were used and their scores from SelectKBest are below:
  I created 3 new features from the original dataset. All 3 of these features made it into my final model as they turned out to have a high predictive value. I used ratios to bring out some interesting trends. Instead of just looking at the total number of emails sent/received to/from a POI, it is better to look at the ratio of the number of emails sent/recevied to/from a POI to the *total* number of emails sent/received. This will differentiate between those communicating with POIs almost exclusively and those who just happen to send a huge number of emails. This similar ratio approach was used to break down the financial numbers as well by taking the ratio of the number of stock options exercised to the total payments that an employee received. 
  
 #### Question 3 
+I ended up using Ada Boost algorithm based on Decision Trees. I also tried Gaussian Naive Bayes, Decision Tree, Random Forest and SVM classifier. Ada Boost performed the best under default parameters at a precision of about 49% and a recall of 39%. The results for the next 3 are below:
+
+| Algorithm | Precision (%) | Recall (%) |
+|:--------------:|:---------------:|:------------:|
+|Decision Tree | 38 | 38|
+|Random Forest | 40 | 20 |
+|Gaussian Naive Bayes | 27 | 34 |
+
+SVM was particularly difficult to get a result with this dataset. It continually failed to identify POIs. Even with feature selection, scaling, removal of outliers and parameter tuning, it did not provide good results.
+
+#### Question 4
+Parameter tuning means selecting the parameters that will give the highest desired performance metric. In some cases performance metrics have certain trade-offs. For example it may be possible to get a higher precision score by sacrificing recall and vice versa. Performance tuning allows the selection of parameters to select the right trade off in performance metrics. The Ada Boost algorithm was tuned by selecting 2 of the critical parameters and using GridSearchCV to iterate over many possible parameter combinations to determine which set of parameters gives the highest f score. F score is chosen as the scoring metric because it weighs both recall and precision.
+
+#### Question 5
+ Validation is the process of ensuring that the model is generalizable to data outside of the specific data that was used to test the algorithm. To do this, the dataset is split into training data and testing data. The training data is used to build/train the model. The testing data is used purely to verify the algorithm will work on more generalized data. The classic mistake that this avoids is overfitting the model to the specific data set. Overfitting means that the model will perform well on the training data set but not on any other datasets thereby limiting the model's predictive capabilities. I tested the models by using the code in the tester.py file that was provided. This uses stratified shuffle split to randomly separate the dataset into testing and training sets and does this several times in a random fashion to make the best use of the limited number of data points in the dataset.
  
- 
- 
+#### Question 6
+The 2 performance metrics used were precision and recall. Precision is the the likelihood that a classification is correct given the algorithm classified a datapoint. In this case it means the likelihood that person actually is a POI if the model predicted it. Recall is the likelihood that the model will correctly classify a person as a POI if they are actually a POI.
  
  
