@@ -21,12 +21,15 @@ all_features = ['poi','salary', 'to_messages', 'deferral_payments', 'total_payme
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
-    data_dict = pickle.load(data_file)
+    my_dataset = pickle.load(data_file)
 
-### Store to my_dataset for easy export below
-my_dataset = data_dict
+### Task 2: Remove outliers
+### By visual inspection I have noticed that "Total" and "The Travel Agency in the Park" appear to be outliers that are not relevant
+### to the investigation
+my_dataset.pop("TOTAL")
+my_dataset.pop("THE TRAVEL AGENCY IN THE PARK")
 
-### Create new features and add them to my_dataset
+### Task 3: Create new feature(s)
 ### My guess is that ratios may be more powerful than absolute numbers, so I've created a few new features that are logical ratios.
 for name, data in my_dataset.iteritems():
     data['perc_email_from_poi']=np.nan_to_num(float(data['from_poi_to_this_person'])/float(data['to_messages']))
@@ -55,42 +58,9 @@ features_list = ['poi']
 for num in sel.get_support(True):
     features_list.append(all_features[num+1])
 
-
 print features_list
 print sel.get_support(True)
 print sel.scores_
-
-############################
-### Task 2: Remove outliers
-############################
-### I'm using 5 x interquartile range for each selected to delete outliers. I feel this is less arbitrary than selecting outliers
-### by visual inspection.
-
-
-#get Q1, Q3 and IQR
-q1 = np.percentile(select_features, 25, axis=0)
-q3 = np.percentile(select_features, 75, axis=0)
-iqr = q3 - q1 
-
-to_delete = []
-i=0
-for feature in features_list:
-    if feature == 'poi':
-        continue
-
-    for k,person in my_dataset.iteritems():
-        if float(person[feature]) >=  (q3[i] + 5 * iqr[i]):
-            to_delete.append(k)
-    i=i+1
-
-for k in set(to_delete):
-    my_dataset.pop(k, None)
-
-
-### Task 3: Create new feature(s)
-### I created the new features before running SelectKBest to see if the features I created were better than others
-### I removed outliers after creating and selecting features because removing outliers for for features that are unimportant may
-### needlessly reduce the dataset.
 
 
 ### Task 4: Try a varity of classifiers
@@ -109,8 +79,7 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 clf_nb = GaussianNB()
 clf_dtree = DecisionTreeClassifier()
 clf_forest = RandomForestClassifier()
-clf_ada = AdaBoostClassifier(learning_rate=3)
-
+clf_ada = AdaBoostClassifier(GaussianNB,learning_rate=3)
 
 
 for clf in [clf_nb, clf_dtree, clf_forest, clf_ada]:
