@@ -9,33 +9,40 @@ The dataset contains information on salaries, stock options, emails sent and rec
 
 ##### Questions from the Rubric
 There are 146 data points in the original dataset, of which 2 are outliers that were removed.
-There are 18 POIs in the dataset, and 126 non-POIs (excluding outliers). This a dataset where the class allocation is skewed so it is important to use performance metric other than accuracy (you could score a high accuracy just by guessing all individuals are not a POI).
-# Include number of features used here
-Some features have a large number of blank values and other features have values for most entries. Total Payments, Exercised Stock Options, Restricted Stock and Total Stock Value have numbers for most people. Loan Advances, Director Fees and Restricted Stock Deferred do not have many entries. Features that have values for most members are more likely to have predictive value than those with few entries.
+There are 18 POIs in the dataset, and 126 non-POIs (excluding outliers). This a dataset where the class allocation is skewed so it is important to use performance metric other than accuracy (a high accuracy score could be attained just by guessing all individuals are not a POI).
+SelectKBest was used with the score parameter set to f_classif and k set to 10. f_classif is selected because the Annova F  is a good single measure that considers both recall and precision and in this case the goal is to maximize both.In the final model, ten features were selected. This was determined by iteratively trying different numbers of features from 1 to 14. Ten features gives the highest value for recall and the third highes value for precision. This seems like the point that gives the best tradeoff between the two perfrmance metrics.
+![](PerformancevNumFeatures.png)
+Some featu res have a large number of blank values and other features have values for most entries. Total Payments, Exercised Stock Options, Restricted Stock and Total Stock Value have numbers for most people. Loan Advances, Director Fees and Restricted Stock Deferred do not have many entries. Features that have values for most members are more likely to have predictive value than those with few entries.
 
 
 #### Question 2
 The features that were used and their scores from SelectKBest are below:
- - 5.45 - from_poi_to_this_person
- - 8.90 - shared_receipt_with_poi
- - 3.29 - perc_email_from_poi
- - 16.9 - perc_email_to_poi
- - 9.46 - perc_totalinc_from_exercstock 
+ - 18.3 - salary
+ - 20.8 - bonus
+ - 9.21 - restriced_stock
+ - 11.5 - deferred_income
+ - 24.2 - total_stock_value
+ - 24.8 - exercised_stock_options
+ - 9.92 - long_term_incentive
+ - 9.21 - restricted_stock
+ - 16.4 - perc_email_to_poi
+ - 9.29 - perc_totalinc_from_exercstock
  
- SelectKBest was used with the score parameter set to f_classif and k set to 5. f_classif is selected because the f measure is a good single measure that considers both recall and precision and in this case the goal is to maximize both. Five features was determined as the best number by interatively trying more and less features. Five features gives the best combination of precision and recall.
+ The feature selection process is discussed in the rubric questions part of section 1.
  
- A SVM classifier was also tested and feature scaling was implemented to do so, however the SVM algorithm gave very poor results (identified no POIs) and was removed from the code and not considered further. This is why feature scaling does not appear in the final code. Naive Bayes and Decision Trees do not require feature scaling to work properly (Random Forest and Ada Boost both rely on Decision Trees at their core).
+ A SVM classifier was tested and feature scaling was implemented to do so, however the SVM algorithm gave very poor results (identified no POIs) and was removed from the code and not considered further. This is why feature scaling does not appear in the final code. Naive Bayes and Decision Trees do not require feature scaling to work properly (Random Forest and Ada Boost both rely on Decision Trees at their core).
  
- Three new features were created from the original dataset. All three of these features made it into the final model as they turned out to have a high predictive value. Ratios were used to bring out some interesting trends. Instead of just looking at the total number of emails sent/received to/from a POI, it is better to look at the ratio of the number of emails sent/recevied to/from a POI to the *total* number of emails sent/received. This will differentiate between those having a high percentage of their emails going to POIs and those who just happen to send a large number of emails. This similar ratio approach was used to break down the financial numbers as well by taking the ratio of the number of stock options exercised to the total payments that an employee received. 
+ Three new features were created from the original dataset. Two of these features made it into the final model as they turned out to have a high predictive value. Ratios were used to bring out some interesting trends. Instead of just looking at the total number of emails sent/received to/from a POI, it is better to look at the ratio of the number of emails sent/recevied to/from a POI to the *total* number of emails sent/received. This will differentiate between those having a high percentage of their emails going to POIs and those who just happen to send a large number of emails. This similar ratio approach was used to break down the financial numbers as well by taking the ratio of the number of stock options exercised to the total payments that an employee received. 
  
 #### Question 3 
-The final algorithm selected was the Ada Boost algorithm based on Decision Trees. Gaussian Naive Bayes, Decision Tree, Random Forest and SVM classifiers were also tested. Ada Boost performed the best after parameter optimzation at a precision of about 38% and a recall of 90%. The results for the next 3 are below:
+The final algorithm selected was Gaussian Naive Bayes and this gave a precision of 49.3% and a recall of  40.5%. AdaBoost based on Decision Trees, Decision Tree, Random Forest and SVM classifiers were also tested. Gaussian Naive Bayes performed the even after AdaBoost and Decision Trees went through parameter optimzation. The performance of the other three algorithms are below
 
 | Algorithm | Precision (%) | Recall (%) |
 |:--------------:|:---------------:|:------------:|
-|Decision Tree | 38 | 38|
-|Random Forest | 40 | 20 |
-|Gaussian Naive Bayes | 27 | 34 |
+|Decision Tree | 26 | 26|
+|Random Forest | 41 | 14 |
+|**Gaussian Naive Bayes** | **49** | **41**|
+|AdaBoost | 30 | 20 |
 
 SVM was particularly difficult to get a result with this dataset. It continually failed to identify POIs. Even with feature selection, scaling, removal of outliers and parameter tuning, it did not provide good results.
 

@@ -47,8 +47,8 @@ labels, features = targetFeatureSplit(data)
 features=np.array(features)
 labels=np.array(labels)
 
-### Selecting the 5 best features 
-sel = SelectKBest(f_classif, k=5)
+### Selecting the 10 best features 
+sel = SelectKBest(f_classif, k=10)
 
 select_features = sel.fit_transform(features, labels)
 select_features = np.array(select_features)
@@ -78,12 +78,14 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 
 clf_nb = GaussianNB()
 clf_dtree = DecisionTreeClassifier()
+clf_svc = SVC()
 clf_forest = RandomForestClassifier()
-clf_ada = AdaBoostClassifier(GaussianNB,learning_rate=3)
+clf_ada = AdaBoostClassifier(n_estimators=25, learning_rate=2)
 
 
-for clf in [clf_nb, clf_dtree, clf_forest, clf_ada]:
+for clf in [clf_nb, clf_dtree, clf_svc, clf_forest, clf_ada]:
     test_classifier(clf, my_dataset, features_list)
+#test_classifier(clf_nb, my_dataset, features_list)
 
     
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
@@ -98,7 +100,6 @@ from sklearn.grid_search import GridSearchCV
 #tuning the parameters on decision tree
 #param_grid = {'criterion':['gini','entropy'], 'splitter':['best','random'], 'max_depth':[5,10,15,20,50],'min_samples_split':[2,3,4,5,6,7]}
 
-
 #tuning the parameters on ada boost
 param_grid = {'n_estimators':[5,25,50,75,100], 'learning_rate':[1,2,3,4]}
 
@@ -107,14 +108,10 @@ clf = GridSearchCV(ada, param_grid, 'f1')
 clf.fit(select_features, labels)
 print clf.best_params_
 
-### GridSearchCV seemed to return a different set of 'ideal' parameters each time
-### these are the parameters that seem fairly stable each time GridSearchCV is run, max_depth appears to change each time
-clf_dtree = DecisionTreeClassifier(criterion='gini', splitter='random', min_samples_split=3)
-
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
 ### that the version of poi_id.py that you submit can be run on its own and
 ### generates the necessary .pkl files for validating your results.
 
-dump_classifier_and_data(clf_dtree, my_dataset, features_list)
+dump_classifier_and_data(clf_ada, my_dataset, features_list)
